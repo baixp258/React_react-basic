@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>1_引出生命周期</title>
+</head>
+<body>
+	<!-- 准备好一个“容器” -->
+	<div id="test"></div>
+	
+	<!-- 引入react核心库 -->
+	<script type="text/javascript" src="../../js/react.development.js"></script>
+	<!-- 引入react-dom，用于支持react操作DOM -->
+	<script type="text/javascript" src="../../js/react-dom.development.js"></script>
+	<!-- 引入babel，用于将jsx转为js -->
+	<script type="text/javascript" src="../../js/babel.min.js"></script>
+
+	<script type="text/babel">
+		//创建组件
+		//生命周期回调函数 <=> 生命周期钩子函数 <=> 生命周期函数 <=> 生命周期钩子
+		class Life extends React.Component{
+
+            state={
+                //灰度
+                opacity:1
+            }
+            //卸载组件
+            dieLife=()=>{
+                //卸载某个容器中节点 （容器<div id="test"></div>）
+                const {timer}=this
+                clearInterval(timer);
+                ReactDOM.unmountComponentAtNode(document.getElementById('test'));
+            }
+            //组件挂载之后执行
+            componentDidMount(){
+                //循环定时器     因为componentDidMount和render是平级函数，调用函数是用对象调用，所以可以把循环定时器信息保存在this中，用于组件卸载执行
+               this.timer=setInterval(()=>{
+                    let {opacity}=this.state
+                    opacity -=0.1
+                    if(opacity<=0){
+                        opacity=1
+                    }
+                    this.setState({
+                        opacity
+                    })
+                   
+                },200)
+            }
+
+            //组件将要卸载执行
+            componentWillUnmount(){
+                //组件卸载时，销毁循环定时器，销毁的定时器信息从对象中获取
+                const {timer}=this
+                clearInterval(timer);
+                
+            }
+           
+
+
+            render(){
+                const {opacity} =this.state
+                return(
+                  <div>
+                    <h2 style={{opacity}}>这是一个会渐变色文字</h2>
+                    <button onClick={this.dieLife}>声明周期</button>
+                  </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<Life/>,document.getElementById('test'))
+		
+        
+	</script>
+</body>
+</html>

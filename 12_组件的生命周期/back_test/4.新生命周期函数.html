@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>1_引出生命周期</title>
+</head>
+<body>
+	<!-- 准备好一个“容器” -->
+	<div id="test"></div>
+	
+	<!-- 引入react核心库 -->
+	<script type="text/javascript" src="../../js/react.development.js"></script>
+	<!-- 引入react-dom，用于支持react操作DOM -->
+	<script type="text/javascript" src="../../js/react-dom.development.js"></script>
+	<!-- 引入babel，用于将jsx转为js -->
+	<script type="text/javascript" src="../../js/babel.min.js"></script>
+
+	<script type="text/babel">
+		//创建组件
+		//生命周期回调函数 <=> 生命周期钩子函数 <=> 生命周期函数 <=> 生命周期钩子
+		class Life extends React.Component{
+
+            
+            /* 
+				1. 初始化阶段: 由ReactDOM.render()触发---初次渲染
+								1.	constructor()
+								2.	getDerivedStateFromProps 
+								3.	render()
+								4.	componentDidMount() =====> 常用
+											一般在这个钩子中做一些初始化的事，例如：开启定时器、发送网络请求、订阅消息
+				2. 更新阶段: 由组件内部this.setSate()或父组件重新render触发
+								1.	getDerivedStateFromProps
+								2.	shouldComponentUpdate()
+								3.	render()
+								4.	getSnapshotBeforeUpdate
+								5.	componentDidUpdate()
+				3. 卸载组件: 由ReactDOM.unmountComponentAtNode()触发
+								1.	componentWillUnmount()  =====> 常用
+											一般在这个钩子中做一些收尾的事，例如：关闭定时器、取消订阅消息
+			*/
+
+            constructor(props){
+				console.log('1. Count---constructor');
+				super(props)
+				//初始化状态
+				this.state = {count:0}
+			}
+
+            //添加
+            add=()=>{
+               const {count}=this.state
+               this.setState({
+                   count:count+1
+               })
+            }
+            
+            force=()=>{
+                //强制执行
+                this.forceUpdate()
+            }
+
+            /*
+            //组件将要挂载   新声明周期函数被弃用
+            componentWillMount(){
+                console.log('2. count-----componentWillMount组件将要挂载执行')
+            }*/
+            
+           static getDerivedStateFromProps(props,count){
+                console.log('count-----getDerivedStateFromProps',props,count)
+                return null
+            }
+
+
+
+
+            //组件挂载完成执行
+            componentDidMount(){
+                console.log('4.count-----componentDidMount组件挂载完成执行')
+            }
+            //组件卸载
+            dieMount=()=>{
+               ReactDOM.unmountComponentAtNode(document.getElementById('test'))
+            }
+
+           //--------------------------------------------------------------------------------------------------
+           // 控制组件更新的阀门
+            shouldComponentUpdate(){
+                console.log('count---shouldComponentUpdate')
+                //返回true render()渲染，返回false的话render()不渲染
+                return true
+           }
+
+           /*
+           //组件将要更新的钩子   新的声明周期函数被废弃
+           componentWillUpdate(){
+               console.log('count---componentWillUpdate')
+              
+           }*/
+
+           //在更新之前获取快照
+           getSnapshotBeforeUpdate(){
+               console.log('count-----getSnapshotBeforeUdpate')
+               //必须返回快照，类型不限
+               return '天上人间'
+           }
+
+
+
+           //组件挂载的钩子
+           componentDidUpdate(preProps,preState,Snapshop){
+            console.log('count---componentDidUpdate',preProps,preState,Snapshop)
+           }
+
+			//初始化渲染、状态更新之后
+			render(){
+				console.log('3.count-----render执行');
+				return(
+					<div>
+						<h2>当前累加的数:{this.state.count}</h2>
+						<button onClick={this.add}>增加</button>
+                        <button onClick={this.dieMount}>组件卸载</button>
+                        <button onClick={this.force}>组件强制执行，跳过shouldComponentUpdate阀门</button>
+					</div>
+				)
+			}
+		}
+		//渲染组件
+		ReactDOM.render(<Life count={199}/>,document.getElementById('test'))
+	</script>
+</body>
+</html>

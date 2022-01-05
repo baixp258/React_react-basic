@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>1_引出生命周期</title>
+</head>
+<body>
+	<!-- 准备好一个“容器” -->
+	<div id="test"></div>
+	
+	<!-- 引入react核心库 -->
+	<script type="text/javascript" src="../../js/react.development.js"></script>
+	<!-- 引入react-dom，用于支持react操作DOM -->
+	<script type="text/javascript" src="../../js/react-dom.development.js"></script>
+	<!-- 引入babel，用于将jsx转为js -->
+	<script type="text/javascript" src="../../js/babel.min.js"></script>
+
+	<script type="text/babel">
+		//创建组件
+		//生命周期回调函数 <=> 生命周期钩子函数 <=> 生命周期函数 <=> 生命周期钩子
+		class Life extends React.Component{
+
+            
+            constructor(props){
+				console.log('1. Count---constructor');
+				super(props)
+				//初始化状态
+				this.state = {count:0}
+			}
+
+            //添加
+            add=()=>{
+               const {count}=this.state
+               this.setState({
+                   count:count+1
+               })
+            }
+            
+            force=()=>{
+                //强制执行
+                this.forceUpdate()
+            }
+
+
+            //组件将要挂载
+            componentWillMount(){
+                console.log('2. count-----componentWillMount组件将要挂载执行')
+            }
+
+
+            //组件挂载完成执行
+            componentDidMount(){
+                console.log('4.count-----componentDidMount组件挂载完成执行')
+            }
+            //组件卸载
+            dieMount=()=>{
+               ReactDOM.unmountComponentAtNode(document.getElementById('test'))
+            }
+
+           //--------------------------------------------------------------------------------------------------
+           // 控制组件更新的阀门
+            shouldComponentUpdate(){
+                console.log('count---shouldComponentUpdate')
+                //返回true render()渲染，返回false的话render()不渲染
+                return false
+           }
+
+           //组件将要更新的钩子
+           componentWillUpdate(){
+               console.log('count---componentWillUpdate')
+              
+           }
+
+           //组件挂载的钩子
+           componentDidUpdate(){
+            console.log('count---componentDidUpdate')
+           }
+
+			//初始化渲染、状态更新之后
+			render(){
+				console.log('3.count-----render执行');
+				return(
+					<div>
+						<h2>当前累加的数:{this.state.count}</h2>
+						<button onClick={this.add}>增加</button>
+                        <button onClick={this.dieMount}>组件卸载</button>
+                        <button onClick={this.force}>组件强制执行，跳过shouldComponentUpdate阀门</button>
+					</div>
+				)
+			}
+		}
+		//渲染组件
+		ReactDOM.render(<Life/>,document.getElementById('test'))
+	</script>
+</body>
+</html>
